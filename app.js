@@ -3,6 +3,7 @@ fetch("data/students.json")
   .then(db => {
     const app = document.getElementById("app");
 
+    /* 共通セレクト生成 */
     function createSelect(options) {
       const select = document.createElement("select");
       options.forEach(opt => {
@@ -14,15 +15,16 @@ fetch("data/students.json")
       return select;
     }
 
+    /* コントロール（ラベル＋select） */
     function createControl(labelEl, select, extraClass = "") {
       const wrapper = document.createElement("div");
       wrapper.className = `control ${extraClass}`;
-
       wrapper.appendChild(labelEl);
       wrapper.appendChild(select);
       return wrapper;
     }
 
+    /* STRIKER / SPECIAL 表示 */
     function createTypeLabel(type) {
       const wrapper = document.createElement("div");
       wrapper.className = "control type";
@@ -39,10 +41,12 @@ fetch("data/students.json")
       return wrapper;
     }
 
+    /* 1行作成 */
     function createRow(type) {
       const row = document.createElement("div");
       row.className = "row";
 
+      /* STRIKER / SPECIAL */
       row.appendChild(createTypeLabel(type));
 
       const students = db
@@ -50,6 +54,10 @@ fetch("data/students.json")
         .sort((a, b) => a["生徒名"].localeCompare(b["生徒名"], "ja"));
 
       /* 生徒名 */
+      const nameLabel = document.createElement("div");
+      nameLabel.className = "control-label";
+      nameLabel.textContent = "生徒";
+
       const nameSelect = document.createElement("select");
       students.forEach(s => {
         const o = document.createElement("option");
@@ -57,10 +65,6 @@ fetch("data/students.json")
         o.textContent = s["生徒名"];
         nameSelect.appendChild(o);
       });
-
-      const nameLabel = document.createElement("div");
-      nameLabel.className = "control-label";
-      nameLabel.textContent = "生徒";
 
       row.appendChild(
         createControl(nameLabel, nameSelect, "student")
@@ -89,9 +93,10 @@ fetch("data/students.json")
       const tierOptions = ["T1","T2","T3","T4","T5","T6","T7","T8","T9","T10"];
       const equipLabelEls = [];
 
-      equipKeys.forEach((key, i) => {
+      equipKeys.forEach(key => {
         const label = document.createElement("div");
         label.className = "control-label";
+        label.textContent = ""; // 生徒選択後に反映
 
         equipLabelEls.push({ key, label });
 
@@ -100,14 +105,14 @@ fetch("data/students.json")
         );
       });
 
-      /* 装備名更新処理 */
+      /* 装備名更新 */
       function updateEquipLabels() {
         const selectedName = nameSelect.value;
         const student = db.find(s => s["生徒名"] === selectedName);
         if (!student) return;
 
-        equipLabelEls.forEach(({ key, label }, i) => {
-          label.textContent = {student[key]}`;
+        equipLabelEls.forEach(({ key, label }) => {
+          label.textContent = student[key]; // ←「装備1：」を削除
         });
       }
 
@@ -119,6 +124,7 @@ fetch("data/students.json")
       return row;
     }
 
+    /* 行生成 */
     for (let i = 0; i < 4; i++) {
       app.appendChild(createRow("STRIKER"));
     }
