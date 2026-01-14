@@ -12,13 +12,13 @@ fetch("data/students.json").then(r=>r.json()).then(db=>{
 
     const students=db
       .filter(s=>s["役割"]===type)
-      .sort((a,b)=>a["名前"].localeCompare(b["名前"],"ja"));
+      .sort((a,b)=>a["生徒名"].localeCompare(b["生徒名"],"ja"));
 
     const nameSel=document.createElement("select");
     students.forEach(s=>{
       const o=document.createElement("option");
-      o.value=s["名前"];
-      o.textContent=s["名前"];
+      o.value=s["生徒名"];
+      o.textContent=s["生徒名"];
       nameSel.appendChild(o);
     });
     row.appendChild(nameSel);
