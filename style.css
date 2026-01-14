@@ -7,3 +7,13 @@ body { font-family: sans-serif; }
 .cell { margin-right: 6px; }
 select { min-width: 90px; }
 .equip-name { font-size: 12px; text-align: center; }
+/* プルダウン共通 */
+select {
+  width: 120px;   /* 今の約半分想定。必要なら調整 */
+}
+
+/* プルダウンを横並びにする親 */
+.row-controls {
+  display: flex;
+  gap: 16px;      /* 等間隔のスペース */
+}
