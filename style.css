@@ -1,58 +1,141 @@
-body {
-  font-family: sans-serif;
-  background: #f7f7f7;
+/* ===========================
+   全体設定
+=========================== */
+
+* {
+  box-sizing: border-box;
 }
+
+body {
+  font-family: "Arial", "Helvetica", "Yu Gothic", "メイリオ", sans-serif;
+  background-color: #f5f6f8;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+/* ===========================
+   アプリ全体
+=========================== */
 
 #app {
-  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 
-/* 1行 = 1生徒 */
+/* ===========================
+   行（1キャラ分）
+=========================== */
+
 .row {
   display: flex;
-  align-items: flex-start; /* 高さズレ防止 */
+  align-items: center;
   gap: 12px;
-  margin-bottom: 20px;
+  background: #ffffff;
+  padding: 10px 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
-/* 各カラム共通 */
+/* ===========================
+   コントロール共通
+=========================== */
+
 .control {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  font-size: 12px;
+  align-items: center;
+  gap: 4px;
+  min-width: 70px;
 }
 
-/* ラベル */
+/* ラベル（上の文字） */
 .control-label {
+  font-size: 12px;
+  font-weight: bold;
   text-align: center;
-  margin-bottom: 4px;
-  height: 16px;
-  line-height: 16px;
+  white-space: nowrap;
 }
 
 /* select 共通 */
 .control select {
-  height: 32px;
+  width: 100%;
+  padding: 4px 6px;
+  font-size: 13px;
+}
+
+/* ===========================
+   生徒名
+=========================== */
+
+.control.student {
+  min-width: 220px; /* 通常の約2.5倍 */
+}
+
+.control.student select {
   font-size: 14px;
 }
 
-/* 生徒名だけ特別に広く */
-.control.student select {
-  width: 250px; /* 約2.5倍 */
+/* ===========================
+   スキル（EX〜SS）
+=========================== */
+
+.control.skill {
+  min-width: 70px;
 }
 
-/* 通常プルダウン */
-.control.skill select {
-  width: 70px;
+/* ===========================
+   装備
+=========================== */
+
+.control.equip {
+  min-width: 90px;
 }
 
-/* 装備 */
-.control.equip select {
-  width: 90px;
+/* ===========================
+   STRIKER / SPECIAL 表示
+=========================== */
+
+.control.type {
+  min-width: 90px;
 }
 
-/* STRIKER / SPECIAL の余白 */
+.type-label {
+  font-family: "Arial", "Helvetica", "Yu Gothic", "メイリオ", sans-serif;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* STRIKER：赤太字ゴシック */
+.type-label.striker {
+  color: #d60000;
+}
+
+/* SPECIAL：青太字ゴシック */
+.type-label.special {
+  color: #0047d6;
+}
+
+/* ===========================
+   STRIKER 行の間隔調整
+=========================== */
+
 .row + .row {
-  margin-top: 10px;
+  margin-top: 4px;
+}
+
+/* ===========================
+   レスポンシブ（最低限）
+=========================== */
+
+@media (max-width: 1200px) {
+  .row {
+    flex-wrap: wrap;
+  }
 }
