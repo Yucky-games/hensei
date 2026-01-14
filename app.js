@@ -72,19 +72,19 @@ fetch("data/students.json")
 
       container.appendChild(controls);
 
-      /* ===== 装備（①〜③ 各1プルダウン） ===== */
+      /* ===== 装備：各1プルダウン ===== */
       const equipArea = document.createElement("div");
       equipArea.className = "equip-area";
 
       const equipTitles = [];
 
-      for (let i = 0; i < 3; i++) {
+      ["装備①", "装備②", "装備③"].forEach((key, index) => {
         const wrap = document.createElement("div");
         wrap.className = "equip-control";
 
         const title = document.createElement("div");
         title.className = "equip-title";
-        equipTitles.push(title);
+        equipTitles[index] = title;
 
         const select = document.createElement("select");
         for (let t = 1; t <= 10; t++) {
@@ -97,7 +97,7 @@ fetch("data/students.json")
         wrap.appendChild(title);
         wrap.appendChild(select);
         equipArea.appendChild(wrap);
-      }
+      });
 
       container.appendChild(equipArea);
 
@@ -119,5 +119,4 @@ fetch("data/students.json")
 
     for (let i = 0; i < 4; i++) app.appendChild(createRow("STRIKER"));
     for (let i = 0; i < 2; i++) app.appendChild(createRow("SPECIAL"));
-  })
-  .catch(err => console.error(err));
+  });
