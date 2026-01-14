@@ -27,15 +27,35 @@ fetch("data/students.json")
       return wrapper;
     }
 
+    function createTypeLabel(type) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "control type";
+
+      const label = document.createElement("div");
+      label.className = "control-label";
+      label.textContent = ""; // 上は空で高さ合わせ
+
+      const body = document.createElement("div");
+      body.className = `type-label ${type.toLowerCase()}`;
+      body.textContent = type;
+
+      wrapper.appendChild(label);
+      wrapper.appendChild(body);
+      return wrapper;
+    }
+
     function createRow(type) {
       const row = document.createElement("div");
       row.className = "row";
+
+      /* STRIKER / SPECIAL 表示 */
+      row.appendChild(createTypeLabel(type));
 
       const students = db
         .filter(s => s["役割"] === type)
         .sort((a, b) => a["生徒名"].localeCompare(b["生徒名"], "ja"));
 
-      const student = students[0]; // 初期表示用
+      const student = students[0];
 
       /* 生徒名 */
       const nameSelect = document.createElement("select");
@@ -52,7 +72,7 @@ fetch("data/students.json")
 
       /* スキル */
       const skillDefs = [
-        ["EX", ["1", "2", "3", "4", "M"]],
+        ["EX", ["1","2","3","4","M"]],
         ["NS", ["1","2","3","4","5","6","7","8","9","M"]],
         ["PS", ["1","2","3","4","5","6","7","8","9","M"]],
         ["SS", ["1","2","3","4","5","6","7","8","9","M"]],
@@ -69,21 +89,21 @@ fetch("data/students.json")
       const tierOptions = ["T1","T2","T3","T4","T5","T6","T7","T8","T9","T10"];
 
       equipKeys.forEach((key, i) => {
-        const label = `装備${i + 1}：${student[key]}`;
         row.appendChild(
-          createControl(label, createSelect(tierOptions), "equip")
+          createControl(
+            `装備${i + 1}：${student[key]}`,
+            createSelect(tierOptions),
+            "equip"
+          )
         );
       });
 
       return row;
     }
 
-    /* STRIKER */
     for (let i = 0; i < 4; i++) {
       app.appendChild(createRow("STRIKER"));
     }
-
-    /* SPECIAL */
     for (let i = 0; i < 2; i++) {
       app.appendChild(createRow("SPECIAL"));
     }
