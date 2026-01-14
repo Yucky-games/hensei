@@ -41,6 +41,24 @@ fetch("data/students.json").then(r=>r.json()).then(db=>{
     row.appendChild(skillSel(9)); // PS
     row.appendChild(skillSel(9)); // SS
 
+const skillLabels = ["EX", "NS", "PS", "SS"];
+
+skillLabels.forEach(label => {
+  const wrapper = document.createElement("div");
+  wrapper.className = "control";
+
+  const title = document.createElement("div");
+  title.className = "label";
+  title.textContent = label;
+
+  const select = document.createElement("select");
+  // select の option 生成処理
+
+  wrapper.appendChild(title);
+  wrapper.appendChild(select);
+  controlsDiv.appendChild(wrapper);
+});
+    
     ["装備①","装備②","装備③"].forEach(key=>{
       const wrap=document.createElement("div");
       const title=document.createElement("div");
