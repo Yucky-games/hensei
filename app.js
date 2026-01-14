@@ -1,5 +1,5 @@
 
-fetch("data/生徒一覧.json").then(r=>r.json()).then(db=>{
+fetch("data/students.json").then(r=>r.json()).then(db=>{
   const app=document.getElementById("app");
 
   function createRow(type){
