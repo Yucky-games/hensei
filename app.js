@@ -17,11 +17,11 @@ fetch("data/students.json")
         .filter(s => s["役割"] === type)
         .sort((a, b) => a["生徒名"].localeCompare(b["生徒名"], "ja"));
 
-      /* ===== コントロール ===== */
+      /* ===== 操作行 ===== */
       const controls = document.createElement("div");
       controls.className = "controls";
 
-      /* 生徒 */
+      /* 生徒名 */
       const nameWrap = document.createElement("div");
       nameWrap.className = "control";
 
@@ -41,6 +41,7 @@ fetch("data/students.json")
       nameWrap.appendChild(nameSelect);
       controls.appendChild(nameWrap);
 
+      /* スキル */
       function createSkill(label, max) {
         const wrap = document.createElement("div");
         wrap.className = "control";
@@ -49,18 +50,18 @@ fetch("data/students.json")
         title.className = "control-title";
         title.textContent = label;
 
-        const sel = document.createElement("select");
+        const select = document.createElement("select");
         for (let i = 1; i <= max; i++) {
           const o = document.createElement("option");
           o.textContent = i;
-          sel.appendChild(o);
+          select.appendChild(o);
         }
         const m = document.createElement("option");
         m.textContent = "M";
-        sel.appendChild(m);
+        select.appendChild(m);
 
         wrap.appendChild(title);
-        wrap.appendChild(sel);
+        wrap.appendChild(select);
         return wrap;
       }
 
@@ -71,37 +72,36 @@ fetch("data/students.json")
 
       container.appendChild(controls);
 
-      /* ===== 装備 ===== */
-      const equips = document.createElement("div");
-      equips.className = "equips";
+      /* ===== 装備（①〜③ 各1プルダウン） ===== */
+      const equipArea = document.createElement("div");
+      equipArea.className = "equip-area";
 
       const equipTitles = [];
 
       for (let i = 0; i < 3; i++) {
+        const wrap = document.createElement("div");
+        wrap.className = "equip-control";
+
         const title = document.createElement("div");
         title.className = "equip-title";
         equipTitles.push(title);
 
-        const row = document.createElement("div");
-        row.className = "equip-row";
-
+        const select = document.createElement("select");
         for (let t = 1; t <= 10; t++) {
-          const sel = document.createElement("select");
-          for (let lv = 0; lv <= 5; lv++) {
-            const o = document.createElement("option");
-            o.value = lv;
-            o.textContent = lv === 0 ? "未強化" : `+${lv}`;
-            sel.appendChild(o);
-          }
-          row.appendChild(sel);
+          const opt = document.createElement("option");
+          opt.value = `T${t}`;
+          opt.textContent = `T${t}`;
+          select.appendChild(opt);
         }
 
-        equips.appendChild(title);
-        equips.appendChild(row);
+        wrap.appendChild(title);
+        wrap.appendChild(select);
+        equipArea.appendChild(wrap);
       }
 
-      container.appendChild(equips);
+      container.appendChild(equipArea);
 
+      /* 生徒変更 → 装備名更新 */
       function updateEquipNames() {
         const student = students.find(s => s["生徒名"] === nameSelect.value);
         if (!student) return;
