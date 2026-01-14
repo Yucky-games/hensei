@@ -107,7 +107,7 @@ fetch("data/students.json")
         if (!student) return;
 
         equipLabelEls.forEach(({ key, label }, i) => {
-          label.textContent = `装備${i + 1}：${student[key]}`;
+          label.textContent = {student[key]}`;
         });
       }
 
