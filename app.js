@@ -59,27 +59,41 @@ skillLabels.forEach(label => {
   controlsDiv.appendChild(wrapper);
 });
     
-    ["装備①","装備②","装備③"].forEach(key=>{
-      const wrap=document.createElement("div");
-      const title=document.createElement("div");
-      title.className="equip-name";
-      title.textContent="";
-      const sel=document.createElement("select");
-      for(let i=1;i<=10;i++){
-        const o=document.createElement("option");
-        o.textContent="T"+i;
-        sel.appendChild(o);
-      }
-      nameSel.addEventListener("change",()=>{
-        const st=students.find(s=>s["名前"]===nameSel.value);
-        title.textContent=st?st[key]:"";
-      });
-      nameSel.dispatchEvent(new Event("change"));
-      wrap.appendChild(title);
-      wrap.appendChild(sel);
-      row.appendChild(wrap);
-    });
+ const equipNames = [
+  student["装備①"],
+  student["装備②"],
+  student["装備③"]
+];
 
+equipNames.forEach((equipName, index) => {
+
+  /* 装備名タイトル */
+  const title = document.createElement("div");
+  title.className = "equip-title";
+  title.textContent = `装備${index + 1}：${equipName}`;
+
+  /* T1〜T10 の行 */
+  const row = document.createElement("div");
+  row.className = "row-controls";
+
+  for (let t = 1; t <= 10; t++) {
+    const select = document.createElement("select");
+
+    for (let i = 0; i <= 5; i++) {
+      const opt = document.createElement("option");
+      opt.value = i;
+      opt.textContent = i === 0 ? "未強化" : `+${i}`;
+      select.appendChild(opt);
+    }
+
+    row.appendChild(select);
+  }
+
+  container.appendChild(title);
+  container.appendChild(row);
+});
+
+    
     return row;
   }
 
