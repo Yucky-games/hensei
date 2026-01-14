@@ -1,122 +1,90 @@
 fetch("data/students.json")
-  .then(res => res.json())
+  .then(r => r.json())
   .then(db => {
     const app = document.getElementById("app");
 
-    function createRow(type) {
-      const container = document.createElement("div");
-      container.className = "row-container";
+    function createSelect(options) {
+      const select = document.createElement("select");
+      options.forEach(opt => {
+        const o = document.createElement("option");
+        o.value = opt;
+        o.textContent = opt;
+        select.appendChild(o);
+      });
+      return select;
+    }
 
-      /* STRIKER / SPECIAL */
-      const typeLabel = document.createElement("div");
-      typeLabel.className = "type-label " + (type === "STRIKER" ? "striker" : "special");
-      typeLabel.textContent = type;
-      container.appendChild(typeLabel);
+    function createControl(labelText, select, extraClass = "") {
+      const wrapper = document.createElement("div");
+      wrapper.className = `control ${extraClass}`;
+
+      const label = document.createElement("div");
+      label.className = "control-label";
+      label.textContent = labelText;
+
+      wrapper.appendChild(label);
+      wrapper.appendChild(select);
+      return wrapper;
+    }
+
+    function createRow(type) {
+      const row = document.createElement("div");
+      row.className = "row";
 
       const students = db
         .filter(s => s["役割"] === type)
         .sort((a, b) => a["生徒名"].localeCompare(b["生徒名"], "ja"));
 
-      /* ===== 操作行 ===== */
-      const controls = document.createElement("div");
-      controls.className = "controls";
+      const student = students[0]; // 初期表示用
 
       /* 生徒名 */
-      const nameWrap = document.createElement("div");
-      nameWrap.className = "control";
-
-      const nameTitle = document.createElement("div");
-      nameTitle.className = "control-title";
-      nameTitle.textContent = "生徒";
-
       const nameSelect = document.createElement("select");
       students.forEach(s => {
-        const opt = document.createElement("option");
-        opt.value = s["生徒名"];
-        opt.textContent = s["生徒名"];
-        nameSelect.appendChild(opt);
+        const o = document.createElement("option");
+        o.value = s["生徒名"];
+        o.textContent = s["生徒名"];
+        nameSelect.appendChild(o);
       });
 
-      nameWrap.appendChild(nameTitle);
-      nameWrap.appendChild(nameSelect);
-      controls.appendChild(nameWrap);
+      row.appendChild(
+        createControl("生徒", nameSelect, "student")
+      );
 
       /* スキル */
-      function createSkill(label, max) {
-        const wrap = document.createElement("div");
-        wrap.className = "control";
+      const skillDefs = [
+        ["EX", ["1", "2", "3", "4", "M"]],
+        ["NS", ["1","2","3","4","5","6","7","8","9","M"]],
+        ["PS", ["1","2","3","4","5","6","7","8","9","M"]],
+        ["SS", ["1","2","3","4","5","6","7","8","9","M"]],
+      ];
 
-        const title = document.createElement("div");
-        title.className = "control-title";
-        title.textContent = label;
-
-        const select = document.createElement("select");
-        for (let i = 1; i <= max; i++) {
-          const o = document.createElement("option");
-          o.textContent = i;
-          select.appendChild(o);
-        }
-        const m = document.createElement("option");
-        m.textContent = "M";
-        select.appendChild(m);
-
-        wrap.appendChild(title);
-        wrap.appendChild(select);
-        return wrap;
-      }
-
-      controls.appendChild(createSkill("EX", 4));
-      controls.appendChild(createSkill("NS", 9));
-      controls.appendChild(createSkill("PS", 9));
-      controls.appendChild(createSkill("SS", 9));
-
-      container.appendChild(controls);
-
-      /* ===== 装備：各1プルダウン ===== */
-      const equipArea = document.createElement("div");
-      equipArea.className = "equip-area";
-
-      const equipTitles = [];
-
-      ["装備①", "装備②", "装備③"].forEach((key, index) => {
-        const wrap = document.createElement("div");
-        wrap.className = "equip-control";
-
-        const title = document.createElement("div");
-        title.className = "equip-title";
-        equipTitles[index] = title;
-
-        const select = document.createElement("select");
-        for (let t = 1; t <= 10; t++) {
-          const opt = document.createElement("option");
-          opt.value = `T${t}`;
-          opt.textContent = `T${t}`;
-          select.appendChild(opt);
-        }
-
-        wrap.appendChild(title);
-        wrap.appendChild(select);
-        equipArea.appendChild(wrap);
+      skillDefs.forEach(([label, opts]) => {
+        row.appendChild(
+          createControl(label, createSelect(opts), "skill")
+        );
       });
 
-      container.appendChild(equipArea);
+      /* 装備 */
+      const equipKeys = ["装備①", "装備②", "装備③"];
+      const tierOptions = ["T1","T2","T3","T4","T5","T6","T7","T8","T9","T10"];
 
-      /* 生徒変更 → 装備名更新 */
-      function updateEquipNames() {
-        const student = students.find(s => s["生徒名"] === nameSelect.value);
-        if (!student) return;
+      equipKeys.forEach((key, i) => {
+        const label = `装備${i + 1}：${student[key]}`;
+        row.appendChild(
+          createControl(label, createSelect(tierOptions), "equip")
+        );
+      });
 
-        equipTitles[0].textContent = `装備①：${student["装備①"] || ""}`;
-        equipTitles[1].textContent = `装備②：${student["装備②"] || ""}`;
-        equipTitles[2].textContent = `装備③：${student["装備③"] || ""}`;
-      }
-
-      nameSelect.addEventListener("change", updateEquipNames);
-      updateEquipNames();
-
-      return container;
+      return row;
     }
 
-    for (let i = 0; i < 4; i++) app.appendChild(createRow("STRIKER"));
-    for (let i = 0; i < 2; i++) app.appendChild(createRow("SPECIAL"));
+    /* STRIKER */
+    for (let i = 0; i < 4; i++) {
+      app.appendChild(createRow("STRIKER"));
+    }
+
+    /* SPECIAL */
+    for (let i = 0; i < 2; i++) {
+      app.appendChild(createRow("SPECIAL"));
+    }
   });
