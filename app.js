@@ -1,110 +1,122 @@
 fetch("data/students.json")
-  .then(r => r.json())
+  .then(res => res.json())
   .then(db => {
     const app = document.getElementById("app");
 
-    function createSelect(options) {
-      const select = document.createElement("select");
-      options.forEach(opt => {
-        const o = document.createElement("option");
-        o.value = opt;
-        o.textContent = opt;
-        select.appendChild(o);
-      });
-      return select;
-    }
-
-    function createControl(labelText, select, extraClass = "") {
-      const wrapper = document.createElement("div");
-      wrapper.className = `control ${extraClass}`;
-
-      const label = document.createElement("div");
-      label.className = "control-label";
-      label.textContent = labelText;
-
-      wrapper.appendChild(label);
-      wrapper.appendChild(select);
-      return wrapper;
-    }
-
-    function createTypeLabel(type) {
-      const wrapper = document.createElement("div");
-      wrapper.className = "control type";
-
-      const label = document.createElement("div");
-      label.className = "control-label";
-      label.textContent = ""; // 上は空で高さ合わせ
-
-      const body = document.createElement("div");
-      body.className = `type-label ${type.toLowerCase()}`;
-      body.textContent = type;
-
-      wrapper.appendChild(label);
-      wrapper.appendChild(body);
-      return wrapper;
-    }
-
     function createRow(type) {
-      const row = document.createElement("div");
-      row.className = "row";
+      const container = document.createElement("div");
+      container.className = "row-container";
 
-      /* STRIKER / SPECIAL 表示 */
-      row.appendChild(createTypeLabel(type));
+      /* STRIKER / SPECIAL */
+      const typeLabel = document.createElement("div");
+      typeLabel.className = "type-label " + (type === "STRIKER" ? "striker" : "special");
+      typeLabel.textContent = type;
+      container.appendChild(typeLabel);
 
       const students = db
         .filter(s => s["役割"] === type)
         .sort((a, b) => a["生徒名"].localeCompare(b["生徒名"], "ja"));
 
-      const student = students[0];
+      /* ===== 操作行 ===== */
+      const controls = document.createElement("div");
+      controls.className = "controls";
 
       /* 生徒名 */
+      const nameWrap = document.createElement("div");
+      nameWrap.className = "control";
+
+      const nameTitle = document.createElement("div");
+      nameTitle.className = "control-title";
+      nameTitle.textContent = "生徒";
+
       const nameSelect = document.createElement("select");
       students.forEach(s => {
-        const o = document.createElement("option");
-        o.value = s["生徒名"];
-        o.textContent = s["生徒名"];
-        nameSelect.appendChild(o);
+        const opt = document.createElement("option");
+        opt.value = s["生徒名"];
+        opt.textContent = s["生徒名"];
+        nameSelect.appendChild(opt);
       });
 
-      row.appendChild(
-        createControl("生徒", nameSelect, "student")
-      );
+      nameWrap.appendChild(nameTitle);
+      nameWrap.appendChild(nameSelect);
+      controls.appendChild(nameWrap);
 
       /* スキル */
-      const skillDefs = [
-        ["EX", ["1","2","3","4","M"]],
-        ["NS", ["1","2","3","4","5","6","7","8","9","M"]],
-        ["PS", ["1","2","3","4","5","6","7","8","9","M"]],
-        ["SS", ["1","2","3","4","5","6","7","8","9","M"]],
-      ];
+      function createSkill(label, max) {
+        const wrap = document.createElement("div");
+        wrap.className = "control";
 
-      skillDefs.forEach(([label, opts]) => {
-        row.appendChild(
-          createControl(label, createSelect(opts), "skill")
-        );
+        const title = document.createElement("div");
+        title.className = "control-title";
+        title.textContent = label;
+
+        const select = document.createElement("select");
+        for (let i = 1; i <= max; i++) {
+          const o = document.createElement("option");
+          o.textContent = i;
+          select.appendChild(o);
+        }
+        const m = document.createElement("option");
+        m.textContent = "M";
+        select.appendChild(m);
+
+        wrap.appendChild(title);
+        wrap.appendChild(select);
+        return wrap;
+      }
+
+      controls.appendChild(createSkill("EX", 4));
+      controls.appendChild(createSkill("NS", 9));
+      controls.appendChild(createSkill("PS", 9));
+      controls.appendChild(createSkill("SS", 9));
+
+      container.appendChild(controls);
+
+      /* ===== 装備：各1プルダウン ===== */
+      const equipArea = document.createElement("div");
+      equipArea.className = "equip-area";
+
+      const equipTitles = [];
+
+      ["装備①", "装備②", "装備③"].forEach((key, index) => {
+        const wrap = document.createElement("div");
+        wrap.className = "equip-control";
+
+        const title = document.createElement("div");
+        title.className = "equip-title";
+        equipTitles[index] = title;
+
+        const select = document.createElement("select");
+        for (let t = 1; t <= 10; t++) {
+          const opt = document.createElement("option");
+          opt.value = `T${t}`;
+          opt.textContent = `T${t}`;
+          select.appendChild(opt);
+        }
+
+        wrap.appendChild(title);
+        wrap.appendChild(select);
+        equipArea.appendChild(wrap);
       });
 
-      /* 装備 */
-      const equipKeys = ["装備①", "装備②", "装備③"];
-      const tierOptions = ["T1","T2","T3","T4","T5","T6","T7","T8","T9","T10"];
+      container.appendChild(equipArea);
 
-      equipKeys.forEach((key, i) => {
-        row.appendChild(
-          createControl(
-            `装備${i + 1}：${student[key]}`,
-            createSelect(tierOptions),
-            "equip"
-          )
-        );
-      });
+      /* 生徒変更 → 装備名更新 */
+      function updateEquipNames() {
+        const student = students.find(s => s["生徒名"] === nameSelect.value);
+        if (!student) return;
 
-      return row;
+        equipTitles[0].textContent = `装備①：${student["装備①"] || ""}`;
+        equipTitles[1].textContent = `装備②：${student["装備②"] || ""}`;
+        equipTitles[2].textContent = `装備③：${student["装備③"] || ""}`;
+      }
+
+      nameSelect.addEventListener("change", updateEquipNames);
+      updateEquipNames();
+
+      return container;
     }
 
-    for (let i = 0; i < 4; i++) {
-      app.appendChild(createRow("STRIKER"));
-    }
-    for (let i = 0; i < 2; i++) {
-      app.appendChild(createRow("SPECIAL"));
-    }
+    for (let i = 0; i < 4; i++) app.appendChild(createRow("STRIKER"));
+    for (let i = 0; i < 2; i++) app.appendChild(createRow("SPECIAL"));
   });
