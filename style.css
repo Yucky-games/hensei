@@ -1,0 +1,9 @@
+
+body { font-family: sans-serif; }
+.row { display: flex; align-items: flex-end; margin-bottom: 8px; }
+.label { width: 90px; font-weight: bold; }
+.striker { color: red; }
+.special { color: blue; }
+.cell { margin-right: 6px; }
+select { min-width: 90px; }
+.equip-name { font-size: 12px; text-align: center; }
